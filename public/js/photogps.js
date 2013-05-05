@@ -6,6 +6,19 @@ function addPoint(lat, lon) {
     position: coords,
     map: map,
   });
+  addInfoWindow(marker, coords.toString());
+}
+
+function addInfoWindow(marker, message) {
+  var info = message;
+
+  var infoWindow = new google.maps.InfoWindow({
+      content: "<b>" + message +  "</b>"
+  });
+
+  google.maps.event.addListener(marker, 'click', function () {
+      infoWindow.open(map, marker);
+  });
 }
 
 function initialize() {
