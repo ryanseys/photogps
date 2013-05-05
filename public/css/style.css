@@ -1,0 +1,12 @@
+html, body, #map-canvas {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#log {
+  text-align:center;
+  background-color: white;
+  position: absolute;
+  top:0;
+}

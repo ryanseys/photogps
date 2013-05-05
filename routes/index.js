@@ -1,8 +1,5 @@
 var exif = require('exif2');
 
-exports.datastore = {};
-
-
 function parseCoords(lat_s, lon_s) {
   var lon_arr = lon_s.split(' ');
   var lon_d = parseInt(lon_arr[0]); //
@@ -25,25 +22,20 @@ function printExif(filename, callback) {
   exif(filename, function(err, obj) {
     var lon_s = obj['gps longitude'];
     var lat_s = obj['gps latitude'];
-    console.log('Filename: \t' + obj['file name']);
-    console.log('Altitude: \t' + (obj['gps altitude'] || 'Unavailable'));
-    console.log('Latitude: \t' + (obj['gps latitude'] || 'Unavailable'));
-    console.log('Longitude: \t' + (obj['gps longitude'] || 'Unavailable'));
-    console.log('Position: \t' + (obj['gps position'] || 'Unavailable'));
     if(lat_s && lon_s) {
-      var coords = parseCoords(lat_s, lon_s);
-      // exports.datastore[filename] = coords;
-      callback(null, coords);
+      callback(parseCoords(lat_s, lon_s));
+    }
+    else if(obj['gps position']) {
+      var split_position = obj['gps position'].split(',');
+      lat_s = split_position[0];
+      lon_s = split_position[1];
+      callback(parseCoords(lat_s, lon_s));
     }
     else {
-      callback("No GPS data found", {});
+      callback({});
     }
   });
 }
-
-String.prototype.endsWith = function(suffix) {
-  return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
 
 exports.index = function(req, res){
   res.render('index', { title: 'PhotoGPS' });
@@ -51,9 +43,13 @@ exports.index = function(req, res){
 
 exports.upload = function(req, res) {
   var file = req.files.file.path;
-  printExif(file, function(err, coords) {
-    if(err) console.log(err);
-    res.writeHead(200, {'Content-Type': 'text/json'});
-    res.end(JSON.stringify(coords));
-  });
+  res.writeHead(200, {'Content-Type': 'text/json'});
+  if(file) {
+    printExif(file, function(coords) {
+      res.end(JSON.stringify(coords));
+    });
+  }
+  else {
+    res.end("{}");
+  }
 }
