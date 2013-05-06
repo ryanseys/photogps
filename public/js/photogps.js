@@ -51,8 +51,6 @@ function no_bubble(e) {
   e.preventDefault();
 }
 
-var reader = new FileReader();
-
 
 
 function upload_file(file) {
@@ -64,6 +62,7 @@ function upload_file(file) {
   // Build a form for the data
   var data = new FormData;
   data.append('file', file);
+  var reader = new FileReader();
   reader.readAsDataURL(file);
   var file_base64;
 
