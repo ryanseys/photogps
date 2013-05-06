@@ -1,19 +1,19 @@
 var map;
 
-function addPoint(lat, lon) {
+function addPoint(lat, lon, file_base64) {
   var coords = new google.maps.LatLng(lat, lon);
   var marker = new google.maps.Marker({
     position: coords,
     map: map,
   });
-  addInfoWindow(marker, coords.toString());
+  addInfoWindow(marker, file_base64);
 }
 
 function addInfoWindow(marker, message) {
   var info = message;
 
   var infoWindow = new google.maps.InfoWindow({
-      content: "<b>" + message +  "</b>"
+      content: '<img height="100" width="100" src="' + message + '"></img>'
   });
 
   google.maps.event.addListener(marker, 'click', function () {
@@ -39,8 +39,9 @@ var log = document.getElementById('log');
 function drop(e) {
   no_bubble(e);
   var files = e.dataTransfer.files;
-  for (var i = 0; i < files.length; i++)
+  for (var i = 0; i < files.length; i++) {
     upload_file(files[i]);
+  }
   return false;
 }
 
@@ -49,6 +50,10 @@ function no_bubble(e) {
   e.stopPropagation();
   e.preventDefault();
 }
+
+var reader = new FileReader();
+
+
 
 function upload_file(file) {
   // Make a progress bar
@@ -59,6 +64,12 @@ function upload_file(file) {
   // Build a form for the data
   var data = new FormData;
   data.append('file', file);
+  reader.readAsDataURL(file);
+  var file_base64;
+
+  reader.onload = function (oFREvent) {
+    file_base64 = oFREvent.target.result;
+  };
 
   // Create a new XHR object and assign its callbacks
   var xhr = new XMLHttpRequest();
@@ -75,9 +86,9 @@ function upload_file(file) {
       if (xhr.status === 200) {
         label.parentNode.removeChild(label);
         var coords = JSON.parse(xhr.responseText);
-        if(coords.lat && coords.lon) addPoint(coords.lat, coords.lon);
+        if(coords.lat && coords.lon) addPoint(coords.lat, coords.lon, file_base64);
       } else {
-        // Error! Look in xhr.statusText
+        console.log('An error occurred!');
       }
     }
   }
