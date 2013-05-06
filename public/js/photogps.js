@@ -30,16 +30,6 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 }
 
-function uploadFiles(event) {
-  event.preventDefault && event.preventDefault();
-
-  // now do something with:
-  var files = event.dataTransfer.files;
-  console.log(files);
-
-  return false;
-}
-
 google.maps.event.addDomListener(window, 'load', initialize);
 
 var dropbox = document.getElementById('map-canvas');
