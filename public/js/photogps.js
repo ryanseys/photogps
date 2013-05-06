@@ -58,12 +58,10 @@ function upload_file(file) {
   var data = new FormData(),
       reader = new FileReader(),
       xhr = new XMLHttpRequest(),
-      file_base64;
-
-  // var coords = new google.maps.LatLng(0, 0);
-  var marker = new google.maps.Marker({
-    map: map,
-  });
+      file_base64,
+      marker = new google.maps.Marker({
+        map: map
+      });
 
   reader.readAsDataURL(file);
   data.append('file', file);
