@@ -13,7 +13,7 @@ function addInfoWindow(marker, message) {
   var info = message;
 
   var infoWindow = new google.maps.InfoWindow({
-      content: '<img height="100" width="100" src="' + message + '"></img>'
+      content: '<img src="' + message + '"/>'
   });
 
   google.maps.event.addListener(marker, 'click', function () {
@@ -51,8 +51,6 @@ function no_bubble(e) {
   e.preventDefault();
 }
 
-
-
 function upload_file(file) {
   // Make a progress bar
   var label = document.createElement('div');
@@ -60,18 +58,13 @@ function upload_file(file) {
   log.insertBefore(label, null);
 
   // Build a form for the data
-  var data = new FormData;
-  data.append('file', file);
-  var reader = new FileReader();
+  var data = new FormData(),
+      reader = new FileReader(),
+      xhr = new XMLHttpRequest(),
+      file_base64;
+
   reader.readAsDataURL(file);
-  var file_base64;
-
-  reader.onload = function (oFREvent) {
-    file_base64 = oFREvent.target.result;
-  };
-
-  // Create a new XHR object and assign its callbacks
-  var xhr = new XMLHttpRequest();
+  data.append('file', file);
 
   // Periodically update progress bar
   if(xhr.upload) {
@@ -85,6 +78,7 @@ function upload_file(file) {
       if (xhr.status === 200) {
         label.parentNode.removeChild(label);
         var coords = JSON.parse(xhr.responseText);
+        console.log('added point');
         if(coords.lat && coords.lon) addPoint(coords.lat, coords.lon, file_base64);
       } else {
         console.log('An error occurred!');
@@ -92,8 +86,40 @@ function upload_file(file) {
     }
   }
 
-  xhr.open('POST', '/upload', true);
-  xhr.send(data); //post!
+  reader.onloadend = function (event) {
+    var img = new Image;
+    img.src = event.target.result;
+
+    img.onload = function() {
+      var maxWidth = 100,
+        maxHeight = 100,
+        imageWidth = img.width,
+        imageHeight = img.height;
+
+      if (imageWidth > imageHeight) {
+        if (imageWidth > maxWidth) {
+          imageHeight *= maxWidth / imageWidth;
+          imageWidth = maxWidth;
+        }
+      }
+      else {
+        if (imageHeight > maxHeight) {
+          imageWidth *= maxHeight / imageHeight;
+          imageHeight = maxHeight;
+        }
+      }
+
+      var canvas = document.createElement('canvas');
+      canvas.width = imageWidth;
+      canvas.height = imageHeight;
+
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+      file_base64 = canvas.toDataURL();
+      xhr.open('POST', '/upload', true);
+      xhr.send(data); //post!
+    }
+  };
 }
 
 // Update the progress bar
