@@ -1,7 +1,7 @@
 photogps
 ========
 
-Extract GPS data from photos.
+Plot GPS data from photos on Google Maps using Node.js 
 
 ## Installation
 
