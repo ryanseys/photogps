@@ -2,7 +2,9 @@ var map,
     dropbox = document.getElementById('map-canvas'),
     log = document.getElementById('log'),
     status = document.getElementById('status'),
-    curr_info;
+    curr_info,
+    done = 0,
+    processing = 0;
 
 function addInfoWindow(marker, message) {
   var infoWindow = new google.maps.InfoWindow({
@@ -26,10 +28,20 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 }
 
+function updateStatus() {
+  if(done == processing) {
+    done = processing = 0;
+    status.innerHTML = "";
+  }
+  else status.innerHTML = "(Processing... " + done + "/" + processing + ")";
+}
+
 // Handle each file that was dropped (you can drop multiple at once)
 function drop(e) {
   no_bubble(e);
   var files = e.target.files || e.dataTransfer.files;
+  processing = files.length;
+  updateStatus();
   for (var i = 0; i < files.length; i++) {
     process_file(files[i]);
   }
@@ -53,8 +65,9 @@ function process_file(file) {
 
   reader.onloadend = function (event) {
     var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
-    // console.log(exif_data);
     if(typeof exif_data === 'undefined') {
+      done++;
+      updateStatus();
       console.log('No GPS data available.');
     }
     else {
@@ -103,11 +116,15 @@ function process_file(file) {
             addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
               imageHeight+'px;" src="' + canvas.toDataURL() + '"/>' +
               '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
+            done++;
+            updateStatus();
           }
         };
         reader.readAsDataURL(file);
       }
       else {
+        done++;
+        updateStatus();
         console.log('No GPS data available.');
       }
     }
