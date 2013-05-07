@@ -67,16 +67,19 @@ function upload_file(file) {
   r.readAsArrayBuffer(file);
 
   r.onloadend = function (event) {
-    var exif_data = Exif.loadFromArrayBuffer(event.target.result);
-    if(exif_data.gpsifd.latitude && exif_data.gpsifd.longitude) {
-      var lat = exif_data.gpsifd.latitude;
-      var lon = exif_data.gpsifd.longitude;
+    var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
+    if(typeof exif_data === 'undefined') {
+      console.log('No GPS data available.')
+    }
+    else {
+      var lat = exif_data.latitude;
+      var lon = exif_data.longitude;
 
       var lat_deg = lat[0] + (lat[1]/60.0) + (lat[2]/3600.0);
       var lon_deg = lon[0] + (lon[1]/60.0) + (lon[2]/3600.0);
 
-      if(exif_data.gpsifd.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
-      if(exif_data.gpsifd.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
+      if(exif_data.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
+      if(exif_data.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
       marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
     }
   }
