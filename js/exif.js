@@ -119,13 +119,15 @@ Exif = {};
     //check magic byte
     soi = reader.byte();
     if (soi !== MARKER_SOI) {
-      throw "Not JPG file format";
+      return {};
+      //throw "Not JPG file format";
     }
 
     //check if file format is Exif
     app1.marker = reader.byte();
     if (app1.marker !== MARKER_APP1) {
-      throw "Not Exif file format";
+      return {};
+      // throw "Not Exif file format";
     }
 
     app1.size = reader.byte();
