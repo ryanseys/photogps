@@ -51,56 +51,65 @@ function update_progress(e) {
   }
 }
 
-// function read_binary_data(file) {
-//   var r = new FileReader();
-
-//   r.readAsBinaryString(file);
-//   r.onloadend = function (event) {
-//     console.log(EXIF.readFromBinaryFile(file));
-//   }
-// }
-
 function upload_file(file) {
   // Build a form for the data
-  var data = new FormData(),
+  var //data = new FormData(),
       reader = new FileReader(),
-      xhr = new XMLHttpRequest(),
+      // xhr = new XMLHttpRequest(),
       file_base64,
       marker = new google.maps.Marker({
         map: map
       });
 
   reader.readAsDataURL(file);
-  //read_binary_data(file);
-  data.append('file', file);
 
-  // Periodically update progress bar
-  if(xhr.upload) {
-    xhr.upload.addEventListener('progress', function (e) {
-      update_progress(e);
-    }, false);
-  }
+  var r = new FileReader();
+  r.readAsArrayBuffer(file);
 
-  // image upload finished?
-  xhr.onreadystatechange = function(e) {
-    if (xhr.readyState === 4) {
-      num_files_completed_this_round++;
-      if(num_files_currently_uploading == num_files_completed_this_round) {
-        num_files_currently_uploading = 0;
-        num_files_completed_this_round = 0;
-        status.innerHTML = "";
-      }
-      else status.innerHTML = "Loaded " + num_files_completed_this_round + "/" + num_files_currently_uploading;
-      if (xhr.status === 200) {
-        var coords = JSON.parse(xhr.responseText);
-        if(coords.lat && coords.lon) {
-          marker.setPosition(new google.maps.LatLng(coords.lat, coords.lon));
-        }
-      } else {
-        console.log('An error occurred!');
-      }
+  r.onloadend = function (event) {
+    var exif_data = Exif.loadFromArrayBuffer(event.target.result);
+    if(exif_data.gpsifd.latitude && exif_data.gpsifd.longitude) {
+      var lat = exif_data.gpsifd.latitude;
+      var lon = exif_data.gpsifd.longitude;
+
+      var lat_deg = lat[0] + (lat[1]/60.0) + (lat[2]/3600.0);
+      var lon_deg = lon[0] + (lon[1]/60.0) + (lon[2]/3600.0);
+
+      if(exif_data.gpsifd.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
+      if(exif_data.gpsifd.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
+      marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
     }
   }
+
+  //data.append('file', file);
+
+  // Periodically update progress bar
+  // if(xhr.upload) {
+  //   xhr.upload.addEventListener('progress', function (e) {
+  //     update_progress(e);
+  //   }, false);
+  // }
+
+  // image upload finished?
+  // xhr.onreadystatechange = function(e) {
+  //   if (xhr.readyState === 4) {
+  //     num_files_completed_this_round++;
+  //     if(num_files_currently_uploading == num_files_completed_this_round) {
+  //       num_files_currently_uploading = 0;
+  //       num_files_completed_this_round = 0;
+  //       status.innerHTML = "";
+  //     }
+  //     else status.innerHTML = "Loaded " + num_files_completed_this_round + "/" + num_files_currently_uploading;
+  //     if (xhr.status === 200) {
+  //       var coords = JSON.parse(xhr.responseText);
+  //       if(coords.lat && coords.lon) {
+  //         marker.setPosition(new google.maps.LatLng(coords.lat, coords.lon));
+  //       }
+  //     } else {
+  //       console.log('An error occurred!');
+  //     }
+  //   }
+  // }
 
   // image file loaded in filereader?
   reader.onloadend = function (event) {
@@ -138,8 +147,8 @@ function upload_file(file) {
     }
   };
 
-  xhr.open('POST', '/upload', true);
-  xhr.send(data); //post!
+  // xhr.open('POST', '/upload', true);
+  // xhr.send(data); //post!
 }
 
 dropbox.addEventListener("drop", drop, false);
