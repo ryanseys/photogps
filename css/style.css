@@ -6,6 +6,12 @@ html, body, #map-canvas {
   height: 100%;
 }
 
+.info_window {
+  display:inline-block;
+  vertical-align:top;
+  margin-right: 10px;
+}
+
 body {
   font:10pt 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color:#444;

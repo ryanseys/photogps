@@ -6,8 +6,9 @@ var map,
 
 function addInfoWindow(marker, message) {
   var infoWindow = new google.maps.InfoWindow({
-    content: '<img src="' + message + '"/>'
+    content: message
   });
+
 
   google.maps.event.addListener(marker, 'click', function () {
     if(curr_info) curr_info.close();
@@ -44,7 +45,8 @@ function no_bubble(e) {
 function process_file(file) {
   var reader = new FileReader(),
       marker = new google.maps.Marker({
-        map: map
+        map: map,
+        flat: true
       });
 
   reader.readAsArrayBuffer(file);
@@ -59,8 +61,8 @@ function process_file(file) {
       var lat = exif_data.latitude;
       var lon = exif_data.longitude;
       if(lat && lon) {
-        var lat_deg = lat[0] + (lat[1]/60.0) + (lat[2]/3600.0);
-        var lon_deg = lon[0] + (lon[1]/60.0) + (lon[2]/3600.0);
+        var lat_deg = (lat[0] + (lat[1]/60.0) + (lat[2]/3600.0)).toFixed(6);
+        var lon_deg = (lon[0] + (lon[1]/60.0) + (lon[2]/3600.0)).toFixed(6);
 
         if(exif_data.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
         if(exif_data.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
@@ -98,7 +100,9 @@ function process_file(file) {
             var ctx = canvas.getContext("2d");
             // redraw smaller
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-            addInfoWindow(marker, canvas.toDataURL());
+            addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
+              imageHeight+'px;" src="' + canvas.toDataURL() + '"/>' +
+              '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
           }
         };
         reader.readAsDataURL(file);
