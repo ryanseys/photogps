@@ -1,7 +1,8 @@
 var map,
     dropbox = document.getElementById('map-canvas'),
     log = document.getElementById('log'),
-    status = document.getElementById('status');
+    status = document.getElementById('status'),
+    curr_info;
 
 function addInfoWindow(marker, message) {
   var infoWindow = new google.maps.InfoWindow({
@@ -9,7 +10,9 @@ function addInfoWindow(marker, message) {
   });
 
   google.maps.event.addListener(marker, 'click', function () {
+    if(curr_info) curr_info.close();
     infoWindow.open(map, marker);
+    curr_info = infoWindow;
   });
 }
 
