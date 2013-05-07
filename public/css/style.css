@@ -1,12 +1,23 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700);
+
 html, body, #map-canvas {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
+body {
+  font:10pt 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color:#444;
+}
+
 #log {
-  text-align:center;
-  background-color: white;
+  padding-left: 10px;
   position: absolute;
   top:0;
+}
+
+.see_thru {
+  background-color: #fff;
+  background-color: rgba(255,255,255,0);
 }
