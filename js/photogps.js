@@ -65,68 +65,61 @@ function process_file(file) {
 
   reader.onloadend = function (event) {
     var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
-    if(typeof exif_data === 'undefined') {
+    if(typeof exif_data === 'undefined' || !exif_data.latitude || !exif_data.longitude) {
+      // No GPS data available
       done++;
       updateStatus();
-      console.log('No GPS data available.');
     }
     else {
       var lat = exif_data.latitude;
       var lon = exif_data.longitude;
-      if(lat && lon) {
-        var lat_deg = (lat[0] + (lat[1]/60.0) + (lat[2]/3600.0)).toFixed(6);
-        var lon_deg = (lon[0] + (lon[1]/60.0) + (lon[2]/3600.0)).toFixed(6);
+      var lat_deg = (lat[0] + (lat[1]/60.0) + (lat[2]/3600.0)).toFixed(6);
+      var lon_deg = (lon[0] + (lon[1]/60.0) + (lon[2]/3600.0)).toFixed(6);
 
-        if(exif_data.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
-        if(exif_data.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
-        marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
+      if(exif_data.latitudeRef.indexOf("S") != -1) lat_deg *= -1;
+      if(exif_data.longitudeRef.indexOf("W") != -1) lon_deg *= -1;
+      marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
 
-        // image file loaded in filereader?
-        reader.onloadend = function (event) {
-          var img = new Image;
-          img.src = event.target.result;
+      // image file loaded in filereader?
+      reader.onloadend = function (event) {
+        var img = new Image;
+        img.src = event.target.result;
 
-          // image loaded in img?
-          img.onload = function() {
-            var maxWidth = 100,
-              maxHeight = 100,
-              imageWidth = img.width,
-              imageHeight = img.height;
+        // image loaded in img?
+        img.onload = function() {
+          var maxWidth = 100,
+            maxHeight = 100,
+            imageWidth = img.width,
+            imageHeight = img.height;
 
-            if (imageWidth > imageHeight) {
-              if (imageWidth > maxWidth) {
-                imageHeight *= maxWidth / imageWidth;
-                imageWidth = maxWidth;
-              }
+          if (imageWidth > imageHeight) {
+            if (imageWidth > maxWidth) {
+              imageHeight *= maxWidth / imageWidth;
+              imageWidth = maxWidth;
             }
-            else {
-              if (imageHeight > maxHeight) {
-                imageWidth *= maxHeight / imageHeight;
-                imageHeight = maxHeight;
-              }
-            }
-
-            var canvas = document.createElement('canvas');
-            canvas.width = imageWidth;
-            canvas.height = imageHeight;
-
-            var ctx = canvas.getContext("2d");
-            // redraw smaller
-            ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-            addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
-              imageHeight+'px;" src="' + canvas.toDataURL() + '"/>' +
-              '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
-            done++;
-            updateStatus();
           }
-        };
-        reader.readAsDataURL(file);
-      }
-      else {
-        done++;
-        updateStatus();
-        console.log('No GPS data available.');
-      }
+          else {
+            if (imageHeight > maxHeight) {
+              imageWidth *= maxHeight / imageHeight;
+              imageHeight = maxHeight;
+            }
+          }
+
+          var canvas = document.createElement('canvas');
+          canvas.width = imageWidth;
+          canvas.height = imageHeight;
+
+          var ctx = canvas.getContext("2d");
+          // redraw smaller
+          ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+          addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
+            imageHeight+'px;" src="' + canvas.toDataURL() + '"/>' +
+            '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
+          done++;
+          updateStatus();
+        }
+      };
+      reader.readAsDataURL(file);
     }
   }
 }
