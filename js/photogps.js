@@ -42,9 +42,7 @@ function drop(e) {
   var files = e.target.files || e.dataTransfer.files;
   processing = files.length;
   updateStatus();
-  for (var i = 0; i < files.length; i++) {
-    process_file(files[i]);
-  }
+  process_file(files, 0, files.length);
   return false;
 }
 
@@ -54,8 +52,10 @@ function no_bubble(e) {
   e.preventDefault();
 }
 
-function process_file(file) {
-  var reader = new FileReader(),
+function process_file(files, i, n) {
+  if(i == n) return;
+  var file = files[i],
+      reader = new FileReader(),
       marker = new google.maps.Marker({
         map: map,
         flat: true
@@ -69,6 +69,7 @@ function process_file(file) {
       // No GPS data available
       done++;
       updateStatus();
+      process_file(files, i+1, n); // process next file
     }
     else {
       var lat = exif_data.latitude;
@@ -113,10 +114,11 @@ function process_file(file) {
           // redraw smaller
           ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
           addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
-            imageHeight+'px;" src="' + canvas.toDataURL() + '"/>' +
+            imageHeight+'px;" src="' + canvas.toDataURL("image/jpeg") + '"/>' +
             '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
           done++;
           updateStatus();
+          process_file(files, i+1, n); // process next file
         }
       };
       reader.readAsDataURL(file);
