@@ -12,7 +12,7 @@ var EXIF = {};
 
 (function() {
 
-var bDebug = true;
+var bDebug = false;
 
 EXIF.Tags = {
 

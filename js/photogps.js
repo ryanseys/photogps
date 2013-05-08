@@ -61,11 +61,11 @@ function process_file(files, i, n) {
         flat: true
       });
 
-  reader.readAsBinaryString(file);
+  // reader.readAsBinaryString(file);
+  reader.readAsArrayBuffer(file);
 
   reader.onloadend = function (event) {
-    var exif = EXIF.readFromBinaryFile(new BinaryFile(event.target.result));
-    // console.log(exif);
+    //var exif = EXIF.readFromBinaryFile(new BinaryFile(event.target.result));
     var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
     if(typeof exif_data === 'undefined' || !exif_data.latitude || !exif_data.longitude) {
       // No GPS data available
