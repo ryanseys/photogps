@@ -2,6 +2,9 @@
  * Javascript EXIF Reader 0.1.4
  * Copyright (c) 2008 Jacob Seidelin, cupboy@gmail.com, http://blog.nihilogic.dk/
  * Licensed under the MPL License [http://www.nihilogic.dk/licenses/mpl-license.txt]
+ *
+ * Modified by Ryan Seys 2013 - Added experimental thumbnail extraction
+ * http://code.flickr.net/2012/06/01/parsing-exif-client-side-using-javascript-2/
  */
 
 
@@ -304,7 +307,6 @@ function addEvent(oElement, strEvent, fncHandler)
 	}
 }
 
-
 function imageHasData(oImg)
 {
 	return !!(oImg.exifdata);
@@ -381,51 +383,47 @@ function readThumbnailData(oFile, ThumbStart, ThumbLength, TIFFOffset, littleEnd
   return '<img src="data:image/jpeg,%'+hexData.join('%')+'" />'
 }
 
-
 function readTags(oFile, iTIFFStart, iDirStart, oStrings, bBigEnd)
 {
 	var iEntries = oFile.getShortAt(iDirStart, bBigEnd);
 	var oTags = {};
-	var done = false
-	var x = 0
-	var thumb_offset;
-	var thumb_length;
-	while(!done) {
-		if(oFile.getShortAt(x, bBigEnd) == 513) {
-			console.log("FOUND OFFSET", x);
-			thumb_offset = readTagValue(oFile, x, iTIFFStart, iDirStart, bBigEnd);
-			console.log("OFFSET:", thumb_offset);
-			done = true;
-		}
-		x++
-	}
 
-	done = false
-	x = 0
-	while(!done) {
-		if(oFile.getShortAt(x, bBigEnd) == 514) {
-			console.log("FOUND LENGTH", x);
-			thumb_length = readTagValue(oFile, x, iTIFFStart, iDirStart, bBigEnd);
-			console.log("LENGTH:", thumb_length);
-			done = true;
-		}
-		x++
-	}
-
-	readThumbnailData(oFile, thumb_offset, thumb_length, iTIFFStart, bBigEnd);
+	// var done = false
+	// var x = 0
+	// var thumb_offset;
+	// var thumb_length;
+	// while(!done) {
+	// 	if(oFile.getShortAt(x, bBigEnd) == 513) {
+	// 		console.log("FOUND OFFSET", x);
+	// 		thumb_offset = readTagValue(oFile, x, iTIFFStart, iDirStart, bBigEnd);
+	// 		console.log("OFFSET:", thumb_offset);
+	// 		done = true;
+	// 	}
+	// 	x++
+	// }
+	// done = false
+	// x = 0
+	// while(!done) {
+	// 	if(oFile.getShortAt(x, bBigEnd) == 514) {
+	// 		console.log("FOUND LENGTH", x);
+	// 		thumb_length = readTagValue(oFile, x, iTIFFStart, iDirStart, bBigEnd);
+	// 		console.log("LENGTH:", thumb_length);
+	// 		done = true;
+	// 	}
+	// 	x++
+	// }
 	// document.open();
-	// document.write('<img src="data:image/jpeg;base64,' + thumb_base64 + '" />');
+	// document.write(readThumbnailData(oFile, thumb_offset, thumb_length, iTIFFStart, bBigEnd));
 	// document.close();
+
 	for (var i=0;i<iEntries;i++) {
 		var iEntryOffset = iDirStart + i*12 + 2;
 		var strTag = oStrings[oFile.getShortAt(iEntryOffset, bBigEnd)];
 		if (!strTag && bDebug) console.log("Unknown tag: " + oFile.getShortAt(iEntryOffset, bBigEnd));
-		// console.log(strTag, readTagValue(oFile, iEntryOffset, iTIFFStart, iDirStart, bBigEnd))
 		oTags[strTag] = readTagValue(oFile, iEntryOffset, iTIFFStart, iDirStart, bBigEnd);
 	}
 	return oTags;
 }
-
 
 function readTagValue(oFile, iEntryOffset, iTIFFStart, iDirStart, bBigEnd)
 {
@@ -513,7 +511,6 @@ function readTagValue(oFile, iEntryOffset, iTIFFStart, iDirStart, bBigEnd)
 	}
 }
 
-
 function readEXIFData(oFile, iStart, iLength)
 {
 	if (oFile.getStringAt(iStart, 4) != "Exif") {
@@ -546,7 +543,7 @@ function readEXIFData(oFile, iStart, iLength)
 	}
 
 	var oTags = readTags(oFile, iTIFFOffset, iTIFFOffset+8, EXIF.TiffTags, bBigEnd);
-	// console.log(oTags)
+
 	if (oTags.ExifIFDPointer) {
 		var oEXIFTags = readTags(oFile, iTIFFOffset, iTIFFOffset + oTags.ExifIFDPointer, EXIF.Tags, bBigEnd);
 		for (var strTag in oEXIFTags) {
@@ -581,8 +578,6 @@ function readEXIFData(oFile, iStart, iLength)
 						+ EXIF.StringValues.Components[oEXIFTags[strTag][2]]
 						+ EXIF.StringValues.Components[oEXIFTags[strTag][3]];
 					break;
-				default:
-					console.log(strTag);
 			}
 			oTags[strTag] = oEXIFTags[strTag];
 		}
@@ -598,8 +593,6 @@ function readEXIFData(oFile, iStart, iLength)
 						+ "." + oGPSTags[strTag][2]
 						+ "." + oGPSTags[strTag][3];
 					break;
-				default:
-					console.log(strTag);
 			}
 			oTags[strTag] = oGPSTags[strTag];
 		}
@@ -607,7 +600,6 @@ function readEXIFData(oFile, iStart, iLength)
 
 	return oTags;
 }
-
 
 EXIF.getData = function(oImg, fncCallback)
 {
@@ -638,7 +630,6 @@ EXIF.getAllTags = function(oImg)
 	}
 	return oAllTags;
 }
-
 
 EXIF.pretty = function(oImg)
 {
@@ -682,4 +673,3 @@ function loadAllImages()
 addEvent(window, "load", loadAllImages);
 
 })();
-
