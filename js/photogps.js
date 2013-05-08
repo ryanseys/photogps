@@ -4,13 +4,14 @@ var map,
     status = document.getElementById('status'),
     curr_info,
     done = 0,
-    processing = 0;
+    processing = 0,
+    reader = new FileReader(),
+    img = new Image();
 
 function addInfoWindow(marker, message) {
   var infoWindow = new google.maps.InfoWindow({
     content: message
   });
-
 
   google.maps.event.addListener(marker, 'click', function () {
     if(curr_info) curr_info.close();
@@ -55,15 +56,16 @@ function no_bubble(e) {
 function process_file(files, i, n) {
   if(i == n) return;
   var file = files[i],
-      reader = new FileReader(),
       marker = new google.maps.Marker({
         map: map,
         flat: true
       });
 
-  reader.readAsArrayBuffer(file);
+  reader.readAsBinaryString(file);
 
   reader.onloadend = function (event) {
+    var exif = EXIF.readFromBinaryFile(new BinaryFile(event.target.result));
+    // console.log(exif);
     var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
     if(typeof exif_data === 'undefined' || !exif_data.latitude || !exif_data.longitude) {
       // No GPS data available
@@ -83,7 +85,6 @@ function process_file(files, i, n) {
 
       // image file loaded in filereader?
       reader.onloadend = function (event) {
-        var img = new Image;
         img.src = event.target.result;
 
         // image loaded in img?

@@ -236,7 +236,6 @@ Exif = {};
         }
       }
       ifd.next = reader.word();
-
       return ifd;
     }
   };
