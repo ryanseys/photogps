@@ -77,7 +77,7 @@ function process_file(files, i, n) {
 
   reader.onloadend = function (event) {
     var exif_data = EXIF.readFromBinaryFile(new BinaryFile(event.target.result));
-    // var exif_data = Exif.loadFromArrayBuffer(event.target.result).gpsifd;
+
     if(!exif_data || !exif_data.GPSLatitude || !exif_data.GPSLongitude) {
       // No GPS data available
       done++;
