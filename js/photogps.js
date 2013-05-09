@@ -61,7 +61,17 @@ function process_file(files, i, n) {
         flat: true
       });
 
-  reader.readAsBinaryString(file);
+  if (file.slice) {
+    filePart = file.slice(0, 131072);
+  } else if (file.webkitSlice) {
+      filePart = file.webkitSlice(0, 131072);
+  } else if (file.mozSlice) {
+      filePart = file.mozSlice(0, 131072);
+  } else {
+    filePart = file;
+  }
+
+  reader.readAsBinaryString(filePart);
 
   reader.onloadend = function (event) {
     var exif_data = EXIF.readFromBinaryFile(new BinaryFile(event.target.result));
@@ -129,7 +139,7 @@ function process_file(files, i, n) {
             process_file(files, i+1, n); // process next file
           }
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file); //read original file
       }
     }
   }
