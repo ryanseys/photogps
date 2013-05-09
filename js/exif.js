@@ -3,7 +3,7 @@
  * Copyright (c) 2008 Jacob Seidelin, cupboy@gmail.com, http://blog.nihilogic.dk/
  * Licensed under the MPL License [http://www.nihilogic.dk/licenses/mpl-license.txt]
  *
- * Modified by Ryan Seys 2013 - Added experimental thumbnail extraction
+ * Modified by Ryan Seys 2013 - Added experimental thumbnail extraction/linting
  * http://code.flickr.net/2012/06/01/parsing-exif-client-side-using-javascript-2/
  */
 
