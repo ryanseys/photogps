@@ -1,12 +1,13 @@
 var map,
     dropbox = document.getElementById('map-canvas'),
     log = document.getElementById('log'),
-    status = document.getElementById('status'),
+    stat_div = document.getElementById('status'),
     curr_info,
     done = 0,
     processing = 0,
     reader = new FileReader(),
-    img = new Image();
+    img = new Image(),
+    memory = "";
 
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
@@ -34,9 +35,9 @@ function initialize() {
 function updateStatus() {
   if(done == processing) {
     done = processing = 0;
-    status.innerHTML = "";
+    stat_div.innerHTML = "";
   }
-  else status.innerHTML = "(Processing... " + done + "/" + processing + ")";
+  else stat_div.innerHTML = "(Processing... " + done + "/" + processing + ")";
 }
 
 // Handle each file that was dropped (you can drop multiple at once)
@@ -94,6 +95,8 @@ function process_file(files, i, n) {
       if(exif_data.GPSLongitudeRef.indexOf("W") != -1) lon_deg *= -1;
       marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
 
+      // memory += lat_deg + "" + lon_deg;
+
       var maxWidth = 100,
           maxHeight = 100,
           imageWidth = exif_data.PixelXDimension,
@@ -114,6 +117,8 @@ function process_file(files, i, n) {
 
       if(exif_data.thumbnail) {
         // yay! thumbnail found!
+        // memory += exif_data.thumbnail;
+        // console.log(memory.length);
         addInfoWindow(marker, exif_data.thumbnail, imageWidth, imageHeight, lat_deg, lon_deg);
         done++;
         updateStatus();
@@ -134,21 +139,25 @@ function process_file(files, i, n) {
             var ctx = canvas.getContext("2d");
             // redraw smaller
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-            addInfoWindow(marker, canvas.toDataURL("image/jpeg"), imageWidth, imageHeight, lat_deg, lon_deg);
+            var thumbnail_data = canvas.toDataURL("image/jpeg");
+            // memory += thumbnail_data;
+            // console.log(memory.length);
+            addInfoWindow(marker, thumbnail_data, imageWidth, imageHeight, lat_deg, lon_deg);
+
             done++;
             updateStatus();
             process_file(files, i+1, n); // process next file
-          }
+          };
         };
         reader.readAsDataURL(file); //read original file
       }
     }
-  }
+  };
 }
 
 dropbox.addEventListener("drop", drop, false);
 dropbox.addEventListener("dragleave", no_bubble, false);
-dropbox.addEventListener("dragexit", no_bubble, false)
+dropbox.addEventListener("dragexit", no_bubble, false);
 dropbox.addEventListener("dragover", no_bubble, false);
 
 google.maps.event.addDomListener(window, 'load', initialize);
