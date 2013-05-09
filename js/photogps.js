@@ -6,8 +6,7 @@ var map,
     done = 0,
     processing = 0,
     reader = new FileReader(),
-    img = new Image(),
-    memory = "";
+    img = new Image();
 
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
@@ -95,8 +94,6 @@ function process_file(files, i, n) {
       if(exif_data.GPSLongitudeRef.indexOf("W") != -1) lon_deg *= -1;
       marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
 
-      // memory += lat_deg + "" + lon_deg;
-
       var maxWidth = 100,
           maxHeight = 100,
           imageWidth = exif_data.PixelXDimension,
@@ -117,8 +114,6 @@ function process_file(files, i, n) {
 
       if(exif_data.thumbnail) {
         // yay! thumbnail found!
-        // memory += exif_data.thumbnail;
-        // console.log(memory.length);
         addInfoWindow(marker, exif_data.thumbnail, imageWidth, imageHeight, lat_deg, lon_deg);
         done++;
         updateStatus();
@@ -128,9 +123,7 @@ function process_file(files, i, n) {
         // load image fully for thumbnail --> slow! :(
         reader.onloadend = function (event) {
           img.src = event.target.result;
-
-          // image loaded in img?
-          img.onload = function() {
+          img.onload = function() { // image loaded in img?
 
             var canvas = document.createElement('canvas');
             canvas.width = imageWidth;
@@ -140,8 +133,6 @@ function process_file(files, i, n) {
             // redraw smaller
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
             var thumbnail_data = canvas.toDataURL("image/jpeg");
-            // memory += thumbnail_data;
-            // console.log(memory.length);
             addInfoWindow(marker, thumbnail_data, imageWidth, imageHeight, lat_deg, lon_deg);
 
             done++;
