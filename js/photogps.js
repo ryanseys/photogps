@@ -8,9 +8,11 @@ var map,
     reader = new FileReader(),
     img = new Image();
 
-function addInfoWindow(marker, message) {
+function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
-    content: message
+    content: '<img class="info_window" width="'+width+'" height="'+height+'" style="width:'+width+'px; height:'+
+              height+'px;" src="' + thumbnail_data + '"/>' +
+              '<div style="display:inline-block;">Lat: ' + lat +'<br>Lon: '+ lon +'</div>'
   });
 
   google.maps.event.addListener(marker, 'click', function () {
@@ -92,9 +94,27 @@ function process_file(files, i, n) {
       if(exif_data.GPSLongitudeRef.indexOf("W") != -1) lon_deg *= -1;
       marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
 
+      var maxWidth = 100,
+          maxHeight = 100,
+          imageWidth = exif_data.PixelXDimension,
+          imageHeight = exif_data.PixelYDimension;
+
+        if (imageWidth > imageHeight) {
+          if (imageWidth > maxWidth) {
+            imageHeight *= maxWidth / imageWidth;
+            imageWidth = maxWidth;
+          }
+        }
+        else {
+          if (imageHeight > maxHeight) {
+            imageWidth *= maxHeight / imageHeight;
+            imageHeight = maxHeight;
+          }
+        }
+
       if(exif_data.thumbnail) {
         // yay! thumbnail found!
-        addInfoWindow(marker, exif_data.thumbnail);
+        addInfoWindow(marker, exif_data.thumbnail, imageWidth, imageHeight, lat_deg, lon_deg);
         done++;
         updateStatus();
         process_file(files, i+1, n); // process next file
@@ -106,23 +126,6 @@ function process_file(files, i, n) {
 
           // image loaded in img?
           img.onload = function() {
-            var maxWidth = 100,
-              maxHeight = 100,
-              imageWidth = img.width,
-              imageHeight = img.height;
-
-            if (imageWidth > imageHeight) {
-              if (imageWidth > maxWidth) {
-                imageHeight *= maxWidth / imageWidth;
-                imageWidth = maxWidth;
-              }
-            }
-            else {
-              if (imageHeight > maxHeight) {
-                imageWidth *= maxHeight / imageHeight;
-                imageHeight = maxHeight;
-              }
-            }
 
             var canvas = document.createElement('canvas');
             canvas.width = imageWidth;
@@ -131,9 +134,7 @@ function process_file(files, i, n) {
             var ctx = canvas.getContext("2d");
             // redraw smaller
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-            addInfoWindow(marker, '<img class="info_window" style="width:'+imageWidth+'px; height:'+
-              imageHeight+'px;" src="' + canvas.toDataURL("image/jpeg") + '"/>' +
-              '<div style="display:inline-block;">Lat: ' + lat_deg +'<br>Lon: '+ lon_deg +'</div>');
+            addInfoWindow(marker, canvas.toDataURL("image/jpeg"), imageWidth, imageHeight, lat_deg, lon_deg);
             done++;
             updateStatus();
             process_file(files, i+1, n); // process next file

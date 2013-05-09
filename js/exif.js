@@ -361,19 +361,8 @@ function readThumbnailData(oFile, ThumbStart, ThumbLength, TIFFOffset, littleEnd
   if (oFile.length < ThumbStart+TIFFOffset+ThumbLength) {
     return;
   }
-  var data = oFile.getBytesAt(ThumbStart+TIFFOffset,ThumbLength)
-  var hexData = new Array();
-  var i;
-
-  for(i in data) {
-    if (data[i] < 16) {
-        hexData[i] = "0"+data[i].toString(16);
-    }
-    else {
-        hexData[i] = data[i].toString(16);
-    }
-  }
-  return '<img style="width:100px; height:100px;" src="data:image/jpeg,%'+hexData.join('%')+'" />'
+  var data = oFile.getStringAt(ThumbStart+TIFFOffset,ThumbLength);
+  return 'data:image/jpeg;base64,' + btoa(data);
 }
 
 function readTags(oFile, iTIFFStart, iDirStart, oStrings, bBigEnd) {
