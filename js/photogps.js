@@ -10,9 +10,9 @@ var map,
 
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
-    content: '<img class="info_window" width="'+width+'" height="'+height+'" style="width:'+width+'px; height:'+
-              height+'px;" src="' + thumbnail_data + '"/>' +
-              '<div style="display:inline-block;">Lat: ' + lat +'<br>Lon: '+ lon +'</div>'
+    content: '<img class="info_window" style="width:' +
+              width + 'px; height:' + height + 'px;" src="' + thumbnail_data + '"/>' +
+              '<div style="display:inline-block;">Lat: ' + lat + '<br>Lon: ' + lon + '</div>'
   });
 
   google.maps.event.addListener(marker, 'click', function () {
