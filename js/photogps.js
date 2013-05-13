@@ -2,14 +2,25 @@ var map,
     dropbox = document.getElementById('map-canvas'),
     log = document.getElementById('log'),
     stat_div = document.getElementById('status'),
-    curr_info,
-    done = 0,
-    processing = 0,
-    reader = new FileReader(),
-    img = new Image(),
-    maxWidth = 100,
-    maxHeight = 100;
+    curr_info, // current information dialog open
+    done = 0, // done processing the current set of files?
+    processing = 0, // how many images have been processed in this batch
+    reader = new FileReader(), // for reading files dragged into browser
+    img = new Image(), // Image object used to render a thumbnail
+    maxWidth = 100, // maximum width of thumbnail image on marker
+    maxHeight = 100; // maximum height of thumbnail image on marker
 
+// TODO: Pull the latitude and longitude from the marker
+
+/**
+ * Add a marker to the Google Map
+ * @param {[type]} marker         The Marker to add
+ * @param {[type]} thumbnail_data The thumbnail image data/URL
+ * @param {[type]} width          Width of the thumbnail
+ * @param {[type]} height         Height of the thumbnail
+ * @param {[type]} lat            latitude of marker
+ * @param {[type]} lon            longitude of marker
+ */
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
     content: '<img class="info_window" style="width:' +
@@ -24,6 +35,9 @@ function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   });
 }
 
+/**
+ * Initialize the Google Map
+ */
 function initialize() {
   var mapOptions = {
     zoom: 2,
@@ -33,6 +47,9 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 }
 
+/**
+ * Update the status of the processing amount
+ */
 function updateStatus() {
   if(done == processing) {
     done = processing = 0;
@@ -155,6 +172,7 @@ function process_file(files, i, n) {
   };
 }
 
+// do initializations after everything is defined
 dropbox.addEventListener("drop", drop, false);
 dropbox.addEventListener("dragleave", no_bubble, false);
 dropbox.addEventListener("dragexit", no_bubble, false);
