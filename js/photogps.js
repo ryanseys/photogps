@@ -27,7 +27,7 @@ function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
 function initialize() {
   var mapOptions = {
     zoom: 2,
-    center: new google.maps.LatLng(45.012143, 16.347125),
+    center: new google.maps.LatLng(51.985511, 34.628375),
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
