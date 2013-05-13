@@ -6,7 +6,9 @@ var map,
     done = 0,
     processing = 0,
     reader = new FileReader(),
-    img = new Image();
+    img = new Image(),
+    maxWidth = 100,
+    maxHeight = 100;
 
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
   var infoWindow = new google.maps.InfoWindow({
@@ -55,6 +57,15 @@ function no_bubble(e) {
   e.preventDefault();
 }
 
+/**
+ * Extracts information from the i'th file
+ * of files and posts on map. Uses recursion
+ * for enforcing 1-by-1 processing.
+ * @param  {Array}        files files list to process
+ * @param  {Number} i     index of file in files to process
+ * @param  {Number} n     number of files in files
+ * @return {Undefined}    undefined
+ */
 function process_file(files, i, n) {
   if(i == n) return;
   var file = files[i],
@@ -94,9 +105,7 @@ function process_file(files, i, n) {
       if(exif_data.GPSLongitudeRef.indexOf("W") != -1) lon_deg *= -1;
       marker.setPosition(new google.maps.LatLng(lat_deg, lon_deg));
 
-      var maxWidth = 100,
-          maxHeight = 100,
-          imageWidth = exif_data.PixelXDimension,
+      var imageWidth = exif_data.PixelXDimension,
           imageHeight = exif_data.PixelYDimension;
 
         if (imageWidth > imageHeight) {
