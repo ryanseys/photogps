@@ -10,7 +10,6 @@
 var EXIF = {};
 
 (function() {
-
 var bDebug = false;
 
 EXIF.Tags = {
