@@ -27,20 +27,3 @@ body {
   background-color: #fff;
   background-color: rgba(255,255,255,0);
 }
-
-.rot90c {
-  -moz-transform:rotate(90deg);
-  -o-transform:rotate(90deg);
-  -ms-transform:rotate(90deg); /* IE 9 */
-  -webkit-transform:rotate(90deg); /* Safari and Chrome */
-  transform:rotate(90deg);
-
-}
-
-.rot90cc {
-  -moz-transform:rotate(-90deg);
-  -o-transform:rotate(-90deg);
-  -ms-transform:rotate(-90deg); /* IE 9 */
-  -webkit-transform:rotate(-90deg); /* Safari and Chrome */
-  transform:rotate(-90deg);
-}
