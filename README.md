@@ -12,7 +12,7 @@ secure and private, and this also greatly speeds up the processing time.
 
 ### I don't get it...
 
-Just try it [here.](http://ryanseys.com/photogps/)
+Just try it [here.](http://ryanseys.github.io/photogps/)
 
 ### I still don't get it...
 
