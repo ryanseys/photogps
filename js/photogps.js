@@ -125,18 +125,18 @@ function process_file(files, i, n) {
       var imageWidth = exif_data.PixelXDimension,
           imageHeight = exif_data.PixelYDimension;
 
-        if (imageWidth > imageHeight) {
-          if (imageWidth > maxWidth) {
-            imageHeight *= maxWidth / imageWidth;
-            imageWidth = maxWidth;
-          }
+      if (imageWidth > imageHeight) {
+        if (imageWidth > maxWidth) {
+          imageHeight *= maxWidth / imageWidth;
+          imageWidth = maxWidth;
         }
-        else {
-          if (imageHeight > maxHeight) {
-            imageWidth *= maxHeight / imageHeight;
-            imageHeight = maxHeight;
-          }
+      }
+      else {
+        if (imageHeight > maxHeight) {
+          imageWidth *= maxHeight / imageHeight;
+          imageHeight = maxHeight;
         }
+      }
 
       if(exif_data.thumbnail) {
         // yay! thumbnail found!
