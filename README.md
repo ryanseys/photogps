@@ -3,6 +3,8 @@ photogps
 
 Plot photos on Google Maps using GPS Exif data via FileReader API
 
+![Screenshot][screenshot]
+
 ### What is this?
 
 PhotoGPS is a completely client-side web app that allows you to drag-n-drop 
@@ -25,3 +27,5 @@ I love pull requests! Send me one (or two) :)
 ### License
 
 MIT
+
+[screenshot]: photogps.png
