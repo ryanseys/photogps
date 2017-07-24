@@ -20,12 +20,13 @@ var map,
  * @param {[type]} height         Height of the thumbnail
  * @param {[type]} lat            latitude of marker
  * @param {[type]} lon            longitude of marker
+ * @param {[type]} filename       filename of photo
  */
-function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
+function addInfoWindow(marker, thumbnail_data, width, height, lat, lon, filename) {
   var infoWindow = new google.maps.InfoWindow({
     content: '<img class="info_window" style="width:' +
               width + 'px; height:' + height + 'px;" src="' + thumbnail_data + '"/>' +
-              '<div style="display:inline-block;">Lat: ' + lat + '<br>Lon: ' + lon + '</div>'
+              '<div style="display:inline-block;">Lat: ' + lat + '<br>Lon: ' + lon + '<br>FN: ' + filename + '</div>'
   });
 
   google.maps.event.addListener(marker, 'click', function () {
@@ -138,10 +139,19 @@ function process_file(files, i, n) {
           imageHeight = maxHeight;
         }
       }
+        
+      // added ImageDescription/filename section
+      if(!exif_data || !exif_data.ImageDescription) {
+        // no image description available
+        var filename = "No Filename";
+      }
+      else {
+        var filename = exif_data.ImageDescription;
+      }
 
       if(exif_data.thumbnail) {
         // yay! thumbnail found!
-        addInfoWindow(marker, exif_data.thumbnail, imageWidth, imageHeight, lat_deg, lon_deg);
+        addInfoWindow(marker, exif_data.thumbnail, imageWidth, imageHeight, lat_deg, lon_deg, filename); // added filename
         done++;
         updateStatus();
         process_file(files, i+1, n); // process next file
@@ -160,7 +170,7 @@ function process_file(files, i, n) {
             // redraw smaller
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
             var thumbnail_data = canvas.toDataURL("image/jpeg");
-            addInfoWindow(marker, thumbnail_data, imageWidth, imageHeight, lat_deg, lon_deg);
+            addInfoWindow(marker, thumbnail_data, imageWidth, imageHeight, lat_deg, lon_deg, filename); // added filename
 
             done++;
             updateStatus();
