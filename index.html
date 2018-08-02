@@ -4,17 +4,21 @@
     <title>PhotoGPS</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8"><link rel="stylesheet" href="css/style.css" type="text/css">
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBcf1d3PQK130jQWt_XdOAuTrgViE-ZmEY"
+  type="text/javascript"></script>
     <script src="js/binaryajax.js"></script>
     <script src="js/exif.js"></script>
   </head>
   <body>
-    <div id="map-canvas" draggable="true"></div>
-    <div id="log" class="see_thru">
-      Drag GPS-embedded images onto the map to plot
+    <div class="nav">
+      <span class="title">PhotoGPS 📍</span>
+      <span class="subtitle">Drag GPS-embedded images (e.g. from your iPhone) onto this map to plot. <b>Don't worry, no data ever leaves your computer.</b> <a target="_blank" href="https://github.com/ryanseys/photogps#what-is-this">How is this possible?</a></span>
       <span id="status"></span>
+      <span class="madeby">Made with ❤️ by <a target="_blank" class="ryanseys" href="https://twitter.com/ryanseys">@ryanseys</a></span>
+    </div>
+    <div class="map-container">
+      <div id="map-canvas" draggable="true"></div>
     </div>
     <script src="js/photogps.js"></script>
   </body>
 </html>
-

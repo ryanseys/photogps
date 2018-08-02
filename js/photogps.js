@@ -1,14 +1,15 @@
-var map,
-    dropbox = document.getElementById('map-canvas'),
-    log = document.getElementById('log'),
-    stat_div = document.getElementById('status'),
-    curr_info, // current information dialog open
-    done = 0, // done processing the current set of files?
-    processing = 0, // how many images have been processed in this batch
-    reader = new FileReader(), // for reading files dragged into browser
-    img = new Image(), // Image object used to render a thumbnail
-    maxWidth = 100, // maximum width of thumbnail image on marker
-    maxHeight = 100; // maximum height of thumbnail image on marker
+const MAX_WIDTH = 100; // maximum width of thumbnail image on marker
+const MAX_HEIGHT = 100; // maximum height of thumbnail image on marker
+
+let map;
+let dropbox = document.getElementById('map-canvas');
+let log = document.getElementById('log');
+let stat_div = document.getElementById('status');
+let curr_info; // current information dialog open
+let done = 0; // done processing the current set of files?
+let processing = 0; // how many images have been processed in this batch
+let reader = new FileReader(); // for reading files dragged into browser
+let img = new Image(); // Image object used to render a thumbnail
 
 // TODO: Pull the latitude and longitude from the marker
 
@@ -22,7 +23,7 @@ var map,
  * @param {[type]} lon            longitude of marker
  */
 function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
-  var infoWindow = new google.maps.InfoWindow({
+  const infoWindow = new google.maps.InfoWindow({
     content: '<img class="info_window" style="width:' +
               width + 'px; height:' + height + 'px;" src="' + thumbnail_data + '"/>' +
               '<div style="display:inline-block;">Lat: ' + lat + '<br>Lon: ' + lon + '</div>'
@@ -38,10 +39,10 @@ function addInfoWindow(marker, thumbnail_data, width, height, lat, lon) {
 /**
  * Initialize the Google Map
  */
-function initialize() {
-  var mapOptions = {
-    zoom: 2,
-    center: new google.maps.LatLng(51.985511, 34.628375),
+function initMap() {
+  const mapOptions = {
+    zoom: 4,
+    center: new google.maps.LatLng(39.728851, -98.576338),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     scaleControl: true
   };
@@ -127,15 +128,15 @@ function process_file(files, i, n) {
           imageHeight = exif_data.PixelYDimension;
 
       if (imageWidth > imageHeight) {
-        if (imageWidth > maxWidth) {
-          imageHeight *= maxWidth / imageWidth;
-          imageWidth = maxWidth;
+        if (imageWidth > MAX_WIDTH) {
+          imageHeight *= MAX_WIDTH / imageWidth;
+          imageWidth = MAX_WIDTH;
         }
       }
       else {
-        if (imageHeight > maxHeight) {
-          imageWidth *= maxHeight / imageHeight;
-          imageHeight = maxHeight;
+        if (imageHeight > MAX_HEIGHT) {
+          imageWidth *= MAX_HEIGHT / imageHeight;
+          imageHeight = MAX_HEIGHT;
         }
       }
 
@@ -179,4 +180,4 @@ dropbox.addEventListener("dragleave", no_bubble, false);
 dropbox.addEventListener("dragexit", no_bubble, false);
 dropbox.addEventListener("dragover", no_bubble, false);
 
-google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', initMap);

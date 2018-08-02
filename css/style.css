@@ -1,8 +1,16 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700);
 
-html, body, #map-canvas {
+html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+.map-container {
+  height: calc(100% - 44px);
+}
+
+#map-canvas {
   height: 100%;
 }
 
@@ -17,13 +25,18 @@ body {
   color:#444;
 }
 
-#log {
-  padding-left: 10px;
-  position: absolute;
-  top:0;
+.nav {
+  padding: 10px;
 }
 
-.see_thru {
-  background-color: #fff;
-  background-color: rgba(255,255,255,0);
+.title {
+  font-weight: bold;
+}
+
+.madeby {
+  float: right;
+}
+
+.ryanseys {
+  font-weight: bold;
 }
